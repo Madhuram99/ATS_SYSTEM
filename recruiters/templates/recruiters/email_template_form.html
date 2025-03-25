@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - ATS System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>{{ title }}</h2>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {{ form.name.label_tag }}
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="text-danger">{{ form.name.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    {{ form.type.label_tag }}
+                    {{ form.type }}
+                    {% if form.type.errors %}
+                        <div class="text-danger">{{ form.type.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                {{ form.subject.label_tag }}
+                {{ form.subject }}
+                {% if form.subject.errors %}
+                    <div class="text-danger">{{ form.subject.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="mb-3">
+                {{ form.body.label_tag }}
+                {{ form.body }}
+                {% if form.body.errors %}
+                    <div class="text-danger">{{ form.body.errors }}</div>
+                {% endif %}
+                <small class="text-muted">
+                    You can use variables like {{ '{{ candidate.first_name }}' }}, {{ '{{ job.title }}' }}, etc.
+                </small>
+            </div>
+            
+            <div class="text-end">
+                <a href="{% url 'email_template_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save Template</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

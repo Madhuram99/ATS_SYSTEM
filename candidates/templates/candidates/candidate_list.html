@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Candidates - ATS System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Candidates</h2>
+        <a href="{% url 'candidate_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add New Candidate
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Filter Candidates</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get">
+                        <div class="mb-3">
+                            <label for="job" class="form-label">Job Position</label>
+                            <select name="job" id="job" class="form-select">
+                                <option value="">All Positions</option>
+                                {% for job_item in jobs %}
+                                    <option value="{{ job_item.id }}" {% if selected_job == job_item.id %}selected{% endif %}>
+                                        {{ job_item.title }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="stage" class="form-label">Stage</label>
+                            <select name="stage" id="stage" class="form-select">
+                                <option value="">All Stages</option>
+                                <option value="new" {% if selected_stage == 'new' %}selected{% endif %}>New</option>
+                                <option value="screening" {% if selected_stage == 'screening' %}selected{% endif %}>Screening</option>
+                                <option value="interview" {% if selected_stage == 'interview' %}selected{% endif %}>Interview</option>
+                                <option value="technical" {% if selected_stage == 'technical' %}selected{% endif %}>Technical Assessment</option>
+                                <option value="final" {% if selected_stage == 'final' %}selected{% endif %}>Final Interview</option>
+                                <option value="offer" {% if selected_stage == 'offer' %}selected{% endif %}>Offer</option>
+                                <option value="hired" {% if selected_stage == 'hired' %}selected{% endif %}>Hired</option>
+                                <option value="rejected" {% if selected_stage == 'rejected' %}selected{% endif %}>Rejected</option>
+                            </select>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Apply Filters</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            {% if candidates %}
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <div class="row">
+                            <div class="col-md-3"><strong>Name</strong></div>
+                            <div class="col-md-3"><strong>Applied For</strong></div>
+                            <div class="col-md-2"><strong>Stage</strong></div>
+                            <div class="col-md-2"><strong>Date Applied</strong></div>
+                            <div class="col-md-2"><strong>Actions</strong></div>
+                        </div>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        {% for candidate in candidates %}
+                            <div class="list-group-item">
+                                <div class="row align-items-center">
+                                    <div class="col-md-3">
+                                        <a href="{% url 'candidate_detail' candidate.id %}">
+                                            {{ candidate.first_name }} {{ candidate.last_name }}
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <a href="{% url 'job_detail' candidate.job.id %}">{{ candidate.job.title }}</a>
+                                    </div>
+                                    <div class="col-md-2">
+                                        {% if candidate.stage == 'new' %}
+                                            <span class="badge bg-info">New</span>
+                                        {% elif candidate.stage == 'screening' %}
+                                            <span class="badge bg-primary">Screening</span>
+                                        {% elif candidate.stage == 'interview' %}
+                                            <span class="badge bg-secondary">Interview</span>
+                                        {% elif candidate.stage == 'technical' %}
+                                            <span class="badge bg-warning text-dark">Technical</span>
+                                        {% elif candidate.stage == 'final' %}
+                                            <span class="badge bg-dark">Final</span>
+                                        {% elif candidate.stage == 'offer' %}
+                                            <span class="badge bg-success">Offer</span>
+                                        {% elif candidate.stage == 'hired' %}
+                                            <span class="badge bg-success">Hired</span>
+                                        {% elif candidate.stage == 'rejected' %}
+                                            <span class="badge bg-danger">Rejected</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{ candidate.created_at|date:"M d, Y" }}
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="btn-group">
+                                            <a href="{% url 'candidate_detail' candidate.id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="{% url 'candidate_edit' candidate.id %}" class="btn btn-sm btn-outline-secondary">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Pagination -->
+                {% if is_paginated %}
+                <nav aria-label="Candidate pagination" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1{% if request.GET.job %}&job={{ request.GET.job }}{% endif %}{% if request.GET.stage %}&stage={{ request.GET.stage }}{% endif %}" aria-label="First">
+                                    <span aria-hidden="true">&laquo;&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.job %}&job={{ request.GET.job }}{% endif %}{% if request.GET.stage %}&stage={{ request.GET.stage }}{% endif %}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if num == page_obj.number %}
+                                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}{% if request.GET.job %}&job={{ request.GET.job }}{% endif %}{% if request.GET.stage %}&stage={{ request.GET.stage }}{% endif %}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.job %}&job={{ request.GET.job }}{% endif %}{% if request.GET.stage %}&stage={{ request.GET.stage }}{% endif %}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.job %}&job={{ request.GET.job }}{% endif %}{% if request.GET.stage %}&stage={{ request.GET.stage }}{% endif %}" aria-label="Last">
+                                    <span aria-hidden="true">&raquo;&raquo;</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+                
+            {% else %}
+                <div class="card">
+                    <div class="card-body text-center py-5">
+                        <i class="bi bi-people display-4 text-muted mb-3"></i>
+                        <h4>No candidates found</h4>
+                        <p class="text-muted">No candidates match your current filter criteria.</p>
+                        <a href="{% url 'candidate_list' %}" class="btn btn-outline-primary">View all candidates</a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Jobs - ATS System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Job Postings</h1>
+    <a href="{% url 'job_create' %}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Create New Job
+    </a>
+</div>
+
+{% if jobs %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for job in jobs %}
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <span class="badge bg-{% if job.status == 'published' %}success{% elif job.status == 'draft' %}warning{% else %}secondary{% endif %} float-end">
+                            {{ job.get_status_display }}
+                        </span>
+                        <h5 class="card-title mb-0">{{ job.title }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">
+                            <i class="bi bi-building"></i> {{ job.department.name }}<br>
+                            <i class="bi bi-geo-alt"></i> {{ job.location }}
+                        </p>
+                        <p class="card-text">{{ job.description|truncatewords:30 }}</p>
+                        {% if job.salary_min or job.salary_max %}
+                            <p><strong>Salary Range:</strong> 
+                                {% if job.salary_min %}${{ job.salary_min|floatformat:0 }}{% endif %}
+                                {% if job.salary_min and job.salary_max %} - {% endif %}
+                                {% if job.salary_max %}${{ job.salary_max|floatformat:0 }}{% endif %}
+                            </p>
+                        {% endif %}
+                        <p class="text-muted mb-0">
+                            <small>Created: {{ job.created_at|date:"M d, Y" }}</small>
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="{% url 'job_detail' job.id %}" class="btn btn-outline-primary btn-sm">View Details</a>
+                        <a href="{% url 'job_edit' job.id %}" class="btn btn-outline-secondary btn-sm">Edit</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        No job postings available. <a href="{% url 'job_create' %}">Create your first job posting</a>.
+    </div>
+{% endif %}
+{% endblock %}

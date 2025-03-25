@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}{% if form.instance.id %}Edit{% else %}Add{% endif %} Candidate - ATS System{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'candidate_list' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Candidates
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">{% if form.instance.id %}Edit{% else %}Add New{% endif %} Candidate</h3>
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.first_name.id_for_label }}" class="form-label">First Name *</label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}
+                        <div class="text-danger">
+                            {% for error in form.first_name.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.last_name.id_for_label }}" class="form-label">Last Name *</label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}
+                        <div class="text-danger">
+                            {% for error in form.last_name.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.email.id_for_label }}" class="form-label">Email *</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <div class="text-danger">
+                            {% for error in form.email.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.phone.id_for_label }}" class="form-label">Phone</label>
+                    {{ form.phone }}
+                    {% if form.phone.errors %}
+                        <div class="text-danger">
+                            {% for error in form.phone.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Add the remaining form fields here -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.job.id_for_label }}" class="form-label">Job Position</label>
+                    <select name="{{ form.job.name }}" id="{{ form.job.id_for_label }}" class="form-select">
+                        {% if job %}
+                            <option value="{{ job.id }}" selected>{{ job.title }}</option>
+                        {% else %}
+                            <option value="">Select a job position</option>
+                            {% for job_item in jobs %}
+                                <option value="{{ job_item.id }}">{{ job_item.title }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                    {% if form.job.errors %}
+                        <div class="text-danger">
+                            {% for error in form.job.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.stage.id_for_label }}" class="form-label">Stage</label>
+                    {{ form.stage }}
+                    {% if form.stage.errors %}
+                        <div class="text-danger">
+                            {% for error in form.stage.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.resume.id_for_label }}" class="form-label">Resume</label>
+                {{ form.resume }}
+                {% if form.resume.errors %}
+                    <div class="text-danger">
+                        {% for error in form.resume.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.notes.id_for_label }}" class="form-label">Notes</label>
+                {{ form.notes }}
+                {% if form.notes.errors %}
+                    <div class="text-danger">
+                        {% for error in form.notes.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="text-end">
+                <a href="{% url 'candidate_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save Candidate</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

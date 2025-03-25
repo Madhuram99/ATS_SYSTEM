@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Schedule Interview - ATS System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Schedule Interview for {{ candidate.first_name }} {{ candidate.last_name }}</h2>
+        <p class="mb-0">Position: {{ job.title }}</p>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {{ form.scheduled_at.label_tag }}
+                    {{ form.scheduled_at }}
+                    {% if form.scheduled_at.errors %}
+                        <div class="text-danger">{{ form.scheduled_at.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    {{ form.duration.label_tag }}
+                    {{ form.duration }}
+                    {% if form.duration.errors %}
+                        <div class="text-danger">{{ form.duration.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                {{ form.location.label_tag }}
+                {{ form.location }}
+                {% if form.location.errors %}
+                    <div class="text-danger">{{ form.location.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="mb-3">
+                <label>Interviewers</label>
+                <div class="border p-3 rounded">
+                    {{ form.interviewers }}
+                </div>
+                {% if form.interviewers.errors %}
+                    <div class="text-danger">{{ form.interviewers.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="mb-3">
+                {{ form.notes.label_tag }}
+                {{ form.notes }}
+                {% if form.notes.errors %}
+                    <div class="text-danger">{{ form.notes.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="text-end">
+                <a href="{% url 'candidate_detail' candidate.id %}" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Schedule Interview</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
